@@ -13,15 +13,15 @@ let ctx = canvas.getContext("2d");
 
 let game = new Game(GAME_WIDTH, GAME_HEIGHT);
 
-//the - gameLoop
+// GAMELOOP
 let lastTime = 0;
 function gameLoop(timeStamp){
-
-  let deltatime = timeStamp - lastTime;
+  ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); //clear the canvas before drawing
+  let deltatime = timeStamp - lastTime; 
   lastTime = timeStamp;
   game.draw(ctx);
   game.update(deltatime);
   requestAnimationFrame(gameLoop);
 }
 
-requestAnimationFrame(gameLoop);
+requestAnimationFrame(gameLoop); // initiates the gameloop should use this instead of setInterval more efficient
