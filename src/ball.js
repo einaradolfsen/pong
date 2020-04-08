@@ -1,13 +1,13 @@
-import {detectRectCollision, Rect} from './collision.js';
+import { detectRectCollision, Rect } from "./collision.js";
 
 export class Ball {
   constructor(game, player1, player2) {
     this.game = game;
     this.player1 = player1;
     this.player2 = player2;
-    this.speed = { x: 0.1, y: 0.1 };
+
     this.size = 10;
-    this.position = { x: this.game.width / 2, y: this.game.height / 2 };
+    this.resetBall();
   }
 
   update(deltaTime) {
@@ -22,16 +22,44 @@ export class Ball {
       this.speed.y = -this.speed.y;
     }
 
-    //DEBUG ball is at the bonaries of left or right of the pitch
-    //if (this.position.x + this.size >= this.game.width || this.position.x <= 0)
-    //  this.speed.x = -this.speed.x;
+    //player1 scores
+    if (this.position.x + this.size >= this.game.width) {
+      this.player1.scorePoint(1);
+      this.resetBall();
+      this.sendScore();
+    }
 
-   if(detectRectCollision(this.toRect(),this.player1.toRect()) ||
-     detectRectCollision(this.toRect(), this.player2.toRect())){
+    //player2 scores
+    if (this.position.x <= 0) {
+      this.player2.scorePoint(1);
+      this.resetBall();
+      this.sendScore();
+    }
+
+    if (
+      detectRectCollision(this.toRect(), this.player1.toRect()) ||
+      detectRectCollision(this.toRect(), this.player2.toRect())
+    ) {
       this.speed.x = -this.speed.x;
     }
   }
 
+  sendScore() {
+    document.dispatchEvent(
+      new CustomEvent("onScore", {
+        bubbles: true,
+        detail: { newScore: this.getScore() },
+      })
+    );
+  }
+
+  resetBall() {
+    this.position = { x: this.game.width / 2, y: this.game.height / 2 };
+    this.speed = { x: 0.5, y: 0.45 };
+  }
+  getScore() {
+    return this.player1.score + " - " + this.player2.score;
+  }
   draw(ctx) {
     ctx.beginPath(); //to clrear previous ball
     ctx.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI);
@@ -39,11 +67,12 @@ export class Ball {
     ctx.fill();
   }
 
-  toRect(){
-    return new Rect(this.position.x - this.size/2, this.position.y - this.size/2, this.size, this.size);
+  toRect() {
+    return new Rect(
+      this.position.x - this.size / 2,
+      this.position.y - this.size / 2,
+      this.size,
+      this.size
+    );
   }
-
-  
-
-
 }
