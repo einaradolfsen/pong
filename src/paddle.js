@@ -1,4 +1,4 @@
-
+import {Rect} from "./collision.js";
 export class Paddle{
  
   constructor(game, align)
@@ -52,6 +52,9 @@ export class Paddle{
 
   stop(){
     this.speed = 0;
+  }
+  toRect(){
+    return new Rect(this.position.x, this.position.y, this.width, this.height);
   }
 }
 
