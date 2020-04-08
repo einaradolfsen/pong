@@ -39,11 +39,8 @@ export class Ball {
     ctx.fill();
   }
 
-  toRect(){
+  toRect() {
     return new Rect(this.position.x - this.size/2, this.position.y - this.size/2, this.size, this.size);
   }
-
-  
-
 
 }
