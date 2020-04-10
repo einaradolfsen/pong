@@ -40,7 +40,23 @@ export class Ball {
       detectRectCollision(this.toRect(), this.player1.toRect()) ||
       detectRectCollision(this.toRect(), this.player2.toRect())
     ) {
-      this.speed.x = -this.speed.x;
+      var isLeft = this.position.x > this.game.width/2;
+      var player = isLeft ? this.player2 : this.player1; //active player
+      
+      var middleOfPlayer = player.position.y + player.height/2;
+      var dist = this.position.y - middleOfPlayer; // dist>0 ball hits bottom of paddle
+      
+      // hit top of the player - ball.speed.y becomes negative
+      // hit bottom of the player - ball.speed.y becomes positive 
+      // 15 is just a magic number for adjusting the ball.speed.y
+      var angleOut = dist/15; 
+
+      // Increces the ball.speed.y 
+      var yIncrease = Math.abs(0.001 * dist);
+      var ballDirection = this.speed.x <0 ? -1 : 1;
+      
+      this.speed.x = -1 * (this.speed.x + Math.abs(player.speed) * 0.1*ballDirection);
+      this.speed.y =  yIncrease * angleOut + player.speed * 0.05;  
     }
   }
 
@@ -55,11 +71,13 @@ export class Ball {
 
   resetBall() {
     this.position = { x: this.game.width / 2, y: this.game.height / 2 };
-    this.speed = { x: 0.5, y: 0.45 };
+    this.speed = { x: 0.1, y: 0.05 };
   }
+
   getScore() {
     return this.player1.score + " - " + this.player2.score;
   }
+
   draw(ctx) {
     ctx.beginPath(); //to clrear previous ball
     ctx.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI);
